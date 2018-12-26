@@ -1,3 +1,5 @@
+# contect with datbase(mysql)
+
 import mysql.connector
 
 class database:
