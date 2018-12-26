@@ -1,3 +1,6 @@
+# tkinter for interface
+# Mysql is database
+
 from backend import database
 import tkinter
 from tkinter import *
