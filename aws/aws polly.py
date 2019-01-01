@@ -11,7 +11,6 @@ polly_clint = boto3.Session( aws_access_key_id='create your key on aws',
     region_name='ap-south-1').client('polly') # polly instance
 spoken_text = polly_clint.synthesize_speech(Text=AB, OutputFormat='mp3', VoiceId='Emma')
 
-# print(spoken_text)
 
 with open('music.mp3', 'wb') as f:
     f.write(spoken_text['AudioStream'].read())
