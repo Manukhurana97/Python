@@ -6,8 +6,8 @@ import os
 from pygame import mixer
 
 AB = input("Enter something : ")
-polly_clint = boto3.Session( aws_access_key_id='',
-    aws_secret_access_key='',
+polly_clint = boto3.Session( aws_access_key_id='create your key on aws',
+    aws_secret_access_key='create your key on aws',
     region_name='ap-south-1').client('polly') # polly instance
 spoken_text = polly_clint.synthesize_speech(Text=AB, OutputFormat='mp3', VoiceId='Emma')
 
