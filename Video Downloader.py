@@ -1,75 +1,55 @@
-import tkinter as tk
 from tkinter import *
 from pytube import YouTube
-from tkinter import messagebox,filedialog
-import youtube_dl as yd
-import sys
-
-# YouTube('https://www.youtube.com/watch?v=jFGKJBPFdUA&list=RDjFGKJBPFdUA&start_radio=1').streams.first().download("/Users/manukhurana/Desktop")
-
-
-def createwidgets():
-
-    label = Label(root, text="Enter the video link")
-    label.grid(row=0, column=0, pady=5, padx=5)
-
-    root.linktext = Entry(root, width=40)
-    root.linktext.grid(row=0, column=1, pady=3, padx=3, columnspan = 1)
-
-    destinationLabel = Label(root, text="Save Audio in")
-    destinationLabel.grid(row=2, column=0, padx=5, pady=5)
-
-    root.destinationtext=Entry(root,width=40)
-    root.destinationtext.grid(row=2, column=1, padx=5, pady=5)
-
-    browserButton = Button(root, text="Browse",command=Browse, width=15)
-    browserButton.grid(row=2, column=2, padx=5, pady=5)
-
-    Downloadbutton = Button(root, text="Download Video", command=Downloadvideo, width=30)
-    Downloadbutton.grid(row=3, column=0, padx=5)
-
-    Downloadbutton = Button(root, text="Download Audio", command=Downloadaudio, width=30)
-    Downloadbutton.grid(row=3, column=1, padx=5)
-
-def Browse():
-    # Retrieving the user-input destination directory
-    root.destination= filedialog.askdirectory()
-
-    # Displaying the directory in the directory textbox
-    root.destinationtext.insert('0', root.destination)
-
-def Downloadvideo():
-
-    YouTube(root.linktext.get()).streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(root.destination)
-    messagebox.showinfo("Success","Video Downloadad and Saved in "+root.destination)
+from pytube import Playlist
+from tkinter import messagebox
+import os
+import pafy
 
 
+def create_widgets():
 
-def Downloadaudio():
-    videoLink = root.linktext.get()
-    savePath = root.destinationtext.get()
+    label = Label(root, text="Url")
+    label.grid(row=0, column=0, pady=0, padx=0)
 
-    # Specifying the options for downloading
-    audDWLDopt = {
+    root.link_text = Entry(root, width=50)
+    root.link_text.grid(row=0, column=1, pady=5, padx=15, columnspan=1)
 
-        'format': 'bestaudio/best',
-        'outtmpl': savePath + "/%(title)s.%(ext)s",
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'wav',
-            'preferredquality': '320'
-        }],
-    }
-    # Downloading the audio file
-    with yd.YoutubeDL(audDWLDopt) as aud_dwld:
-        aud_dwld.download([videoLink])
-        messagebox.showinfo("Success", "Audio Downloadad and Saved in " + savePath)
-        sys.exit(0)
+    download_video = Button(root, text="Download Video", command=Download_video, width=25, fg='white')
+    download_video.grid(row=2, column=0, padx=5)
+
+    download_audio = Button(root, text="Download Audio", command=Download_audio, width=25, fg='white')
+    download_audio.grid(row=2, column=1, padx=5)
+
+    download_playlist = Button(root, text="Download Playlist", command=Download_playlist, width=25,  bg='black')
+    download_playlist.grid(row=2, column=2, padx=5)
+
+
+def Download_video():
+    loc = os.getcwd()
+    YouTube(root.link_text.get()).streams.filter(adaptive=True).filter(subtype='mp4').order_by(
+        'resolution').desc().first().download(loc)
+    messagebox.showinfo("Success", "Video Downloadad and Saved in " + loc)
+
+
+def Download_playlist():
+    loc = os.getcwd()
+    Playlist(root.link_text.get()).download_all(loc)
+    messagebox.showinfo("Success", "Entire Playlist download at " + loc)
+
+
+def Download_audio():
+    loc = os.getcwd()
+    audio_Link = root.link_text.get()
+    audio = pafy.new(audio_Link)
+    best_audio = audio.getbestaudio()
+    best_audio.download()
+    messagebox.showinfo("Success", "Audio Saved at " + loc)
 
 
 root = Tk()
 
+
 root.title("YouTube video Downloader")
 root.resizable(FALSE, FALSE)
-createwidgets()
+create_widgets()
 root.mainloop()
